@@ -15,6 +15,7 @@
 - Maven
 - JDK 8
 #### 插件
+- Lombok
 - [编辑器 Markdown](https://pandao.github.io/editor.md/)
 - [内容排版 typo.css](https://github.com/sofish/typo.css)
 - [动画 animate.css](https://daneden.github.io/animate.css/)
