@@ -7,7 +7,6 @@ import org.springframework.context.annotation.ImportResource;
 
 @SpringBootApplication
 @MapperScan("xyz.leecue.blog.dao")
-@ImportResource(locations = {"classpath:kaptcha.xml"})
 public class BlogApplication {
 
     public static void main(String[] args) {
