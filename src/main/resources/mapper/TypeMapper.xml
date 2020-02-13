@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="xyz.leecue.blog.dao.TypeMapper">
+
+    <resultMap id="typeSelectMap" type="type">
+        <id property="id" column="tid"/>
+        <result property="name" column="name"/>
+        <collection property="blogs" column="bid" ofType="blog" javaType="list" fetchType="eager">
+            <id property="id" column="id"/>
+            <result property="title" column="title"/>
+            <result property="type_id" column="type_id"/>
+        </collection>
+    </resultMap>
+
+    <insert id="createType" keyProperty="id" useGeneratedKeys="true" parameterType="type" flushCache="true">
+        INSERT INTO `t_type`(id, name)
+            VALUES (#{id}, #{name})
+    </insert>
+
+    <update id="updateType" flushCache="true">
+        UPDATE `t_type` SET name = #{type.name} WHERE id = #{nid}
+    </update>
+
+    <delete id="deleteType" flushCache="true" parameterType="long">
+        DELETE FROM `t_type` WHERE id = #{id}
+    </delete>
+
+
+    <select id="findTypeById" resultType="type" parameterType="long" useCache="true">
+        SELECT * FROM `t_type` WHERE id = #{id} LIMIT 1
+    </select>
+
+    <select id="getTypes" resultType="type" useCache="true">
+        SELECT * FROM `t_type`
+    </select>
+
+    <select id="findTypeByName" resultType="type" parameterType="string" useCache="true">
+        SELECT * FROM `t_type` WHERE name = #{name}
+    </select>
+
+    <select id="findTop" resultMap="typeSelectMap" useCache="true">
+        SELECT t.id as tid, t.`name`, b.id as bid, b.title, b.type_id
+        FROM `t_blog` b, `t_type` t
+        WHERE b.type_id = t.id AND b.publish = true
+    </select>
+
+    <select id="findAllType" resultMap="typeSelectMap" useCache="true">
+        SELECT type.id as tid, type.name, blog.id as bid, blog.title, blog.type_id
+        FROM `t_type` type, `t_blog` blog
+        WHERE type.id = blog.type_id AND blog.publish = true
+    </select>
+
+</mapper>

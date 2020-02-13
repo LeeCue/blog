@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="xyz.leecue.blog.dao.CommentMapper">
+
+
+    <resultMap id="commentSelectMap" type="comment">
+        <id property="id" column="id"/>
+
+        <result property="nickname" column="nickname"/>
+        <result property="email" column="email"/>
+        <result property="content" column="content"/>
+        <result property="avatar" column="avatar"/>
+        <!-- 父评论的查询 -->
+        <association property="parentComment" column="id" fetchType="eager"
+                     select="xyz.leecue.blog.dao.CommentMapper.findParentComment"/>
+        <!-- 子评论查询 -->
+        <collection property="replyComments" column="id" ofType="comment" fetchType="eager"
+                    select="xyz.leecue.blog.dao.CommentMapper.findChildCommentById"/>
+
+    </resultMap>
+
+    <sql id="commentCols">
+        (id, nickname, email, content, avatar, parentCommentId)
+    </sql>
+
+    <insert id="createComment" parameterType="comment" useGeneratedKeys="true" keyProperty="id" flushCache="true">
+        INSERT INTO `t_comment`
+        <include refid="commentCols"/>
+        VALUES (null, #{nickname}, #{email}, #{content}, #{avatar}, #{parentCommentId})
+    </insert>
+
+    <insert id="correlateReplyComment" flushCache="true" useGeneratedKeys="false">
+        INSERT INTO `t_parent_comments`(parent_id, child_id)
+        VALUES(#{parentId}, #{childId})
+    </insert>
+
+    <insert id="createBlogComment" flushCache="true" useGeneratedKeys="false">
+        INSERT INTO `t_blog_comments`(blog_id, comment_id)
+        VALUES(#{blogId}, #{commentId})
+    </insert>
+
+    <select id="findCommentByBlogId" resultMap="commentSelectMap" parameterType="long" useCache="false">
+        SELECT *
+        FROM `t_comment`
+        WHERE id IN
+        (SELECT comment_id FROM `t_blog_comments` WHERE blog_id = #{blogId})
+    </select>
+
+    <select id="findChildCommentById" resultMap="commentSelectMap" useCache="true">
+        SELECT *
+        FROM `t_comment`
+        WHERE id IN
+        (SELECT child_id FROM `t_parent_comments` WHERE parent_id = #{parentId})
+    </select>
+
+    <select id="findOne" resultType="comment">
+        SELECT *
+        FROM `t_comment`
+        WHERE id = #{commentId}
+    </select>
+
+    <select id="findParentComment" resultType="comment" useCache="true" parameterType="long">
+        SELECT id, nickname, email, content, avatar, createTime, parentCommentId
+        FROM `t_comment` c, `t_parent_comments` pc
+        WHERE pc.child_id = #{commentId} AND id = parent_id
+    </select>
+
+</mapper>

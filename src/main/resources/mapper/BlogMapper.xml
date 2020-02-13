@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="xyz.leecue.blog.dao.BlogMapper">
+
+    <!-- 将Blog所有属性全部查出 -->
+    <resultMap id="blogAllSelectMap" type="blog">
+        <!-- 主键 -->
+        <id property="id" column="id"/>
+
+        <!-- 其他属性 -->
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="firstPicture" column="firstPicture"/>
+        <result property="flag" column="flag"/>
+        <result property="description" column="description"/>
+        <result property="views" column="views"/>
+        <result property="appreciationSwitch" column="appreciationSwitch"/>
+        <result property="copyRightSwitch" column="copyRightSwitch"/>
+        <result property="commentSwitch" column="commentSwitch"/>
+        <result property="publish" column="publish"/>
+        <result property="recommend" column="recommend"/>
+        <result property="user_id" column="user_id"/>
+        <result property="type_id" column="type_id"/>
+
+        <!-- 级联查询(一对一查询) -->
+        <association property="user" column="user_id" fetchType="eager"
+                     select="xyz.leecue.blog.dao.UserMapper.findUserById"/>
+        <association property="type" column="type_id" fetchType="eager"
+                     select="xyz.leecue.blog.dao.TypeMapper.findTypeById"/>
+        <collection property="tags" column="id" ofType="tag" javaType="list" fetchType="eager"
+                    select="xyz.leecue.blog.dao.TagMapper.findTagsByBlogId"/>
+        <collection property="comments" column="id" ofType="comment" javaType="list" fetchType="eager"
+                    select="xyz.leecue.blog.dao.CommentMapper.findCommentByBlogId"/>
+    </resultMap>
+
+    <!-- 查询一部分blog信息 -->
+    <resultMap id="blogRecommendMap" type="blog">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+    </resultMap>
+
+    <!-- 查询在首页展示的Blog信息 -->
+    <resultMap id="blogShowMap" type="blog">
+        <!-- 主键 -->
+        <id property="id" column="id"/>
+
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="views" column="views"/>
+        <result property="firstPicture" column="firstPicture"/>
+        <result property="createTime" column="createTime"/>
+        <result property="type_id" column="type_id"/>
+        <result property="user_id" column="user_id"/>
+
+        <!-- 级联查询 -->
+        <association property="user" column="user_id" fetchType="eager"
+                     select="xyz.leecue.blog.dao.UserMapper.findUserById"/>
+        <association property="type" column="type_id" fetchType="eager"
+                     select="xyz.leecue.blog.dao.TypeMapper.findTypeById"/>
+    </resultMap>
+
+    <resultMap id="blogYearCount" type="blog">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="flag" column="flag"/>
+        <result property="createTime" column="createTime"/>
+        <result property="updateTime" column="updateTIme"/>
+    </resultMap>
+
+    <sql id="blogCols">
+        (id, title, content, firstPicture, flag, description, views, appreciationSwitch, copyRightSwitch,
+         commentSwitch, publish, recommend, type_id, user_id)
+    </sql>
+
+    <insert id="createBlog" keyProperty="id" flushCache="true" useGeneratedKeys="true">
+        INSERT INTO `t_blog`
+        <include refid="blogCols"/>
+        VALUES (#{id}, #{title}, #{content}, #{firstPicture}, #{flag}, #{description}, #{views},
+        #{appreciationSwitch}, #{copyRightSwitch}, #{commentSwitch}, #{publish}, #{recommend},
+        #{type_id}, #{user_id})
+    </insert>
+
+    <insert id="createTag" useGeneratedKeys="false" flushCache="true">
+        INSERT INTO `t_blog_tags`(blog_id, tag_id)
+            VALUES (#{blogId}, #{tagId})
+    </insert>
+
+    <update id="updateBlog" flushCache="true">
+        UPDATE `t_blog` SET title = #{blog.title}, content = #{blog.content}, flag = #{blog.flag}, firstPicture = #{blog.firstPicture}, views = #{blog.views},
+            description = #{blog.description}, appreciationSwitch = #{blog.appreciationSwitch}, copyRightSwitch = #{blog.copyRightSwitch}, commentSwitch = #{blog.commentSwitch},
+            publish = #{blog.publish}, recommend = #{blog.recommend}, type_id = #{blog.type_id}, user_id = #{blog.user_id}
+            WHERE id = #{blogId}
+    </update>
+
+    <update id="updateViews" parameterType="long" flushCache="true">
+        UPDATE `t_blog`
+        SET views = views + 1
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteBlog" parameterType="long" flushCache="true">
+        DELETE
+        FROM `t_blog`
+        WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteTag" parameterType="long" flushCache="true">
+        DELETE FROM `t_blog_tags` WHERE blog_id = #{blogId}
+    </delete>
+
+    <select id="findBlogById" resultMap="blogAllSelectMap" useCache="true" parameterType="long">
+        SELECT *
+        FROM `t_blog`
+        WHERE id = #{id}
+    </select>
+
+    <select id="listBlog" resultMap="blogAllSelectMap" useCache="true">
+        SELECT *
+        FROM `t_blog`
+        <where>
+            <if test="title != null and title != ''">
+                AND title REGEXP #{title}
+            </if>
+            <if test="flag != null and flag != ''">
+                AND flag = #{flag}
+            </if>
+            <if test="recommend != null">
+                AND recommend = #{recommend}
+            </if>
+            <if test="typeId != null">
+                AND type_id = #{typeId}
+            </if>
+            <if test="publish != null">
+                AND publish = #{publish}
+            </if>
+        </where>
+        ORDER BY updateTime DESC
+    </select>
+
+    <select id="getBlogs" resultMap="blogShowMap" useCache="true">
+        SELECT id, title, description, views, firstPicture, updateTime, type_id, user_id
+        FROM `t_blog`
+        WHERE publish = true ORDER BY updateTime DESC
+    </select>
+
+    <select id="getBlogRecommend" resultMap="blogRecommendMap" useCache="true">
+        SELECT id,title
+        FROM `t_blog`
+        WHERE recommend = true AND publish = true ORDER BY updateTime DESC  LIMIT #{size}
+    </select>
+
+    <select id="getBlogsAccordingToTitle" resultMap="blogShowMap" useCache="true">
+        SELECT id, title, description, views, firstPicture, updateTime, type_id, user_id
+        FROM `t_blog`
+        WHERE publish = true AND title REGEXP #{query} ORDER BY updateTime DESC
+    </select>
+
+    <select id="getBlogsByTagId" resultMap="blogShowMap" useCache="true">
+        SELECT blog.id, blog.title, blog.description, blog.views, blog.firstPicture, blog.updateTime, blog.type_id, blog.user_id
+        FROM `t_blog` blog, `t_blog_tags` bt
+        WHERE bt.tag_id = #{tagId} AND blog.id = bt.blog_id AND blog.publish = true ORDER BY updateTime DESC
+    </select>
+
+    <select id="findGroupYear" resultType="string" useCache="true">
+        SELECT DATE_FORMAT(createTime,'%Y') AS year
+        FROM `t_blog`
+        WHERE publish = true
+        GROUP BY DATE_FORMAT(createTime,'%Y') ORDER BY updateTime DESC
+    </select>
+
+    <select id="findByYear" resultMap="blogYearCount" parameterType="string" useCache="true">
+        SELECT id, title, flag, updateTime, createTime
+        FROM `t_blog`
+        WHERE publish = true AND year(createTime) = #{year} ORDER BY updateTime DESC
+    </select>
+
+    <select id="countBlog" resultType="long" useCache="true">
+        SELECT COUNT(id)
+        FROM `t_blog`
+        WHERE publish = true
+    </select>
+
+
+</mapper>
