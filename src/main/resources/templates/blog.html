@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
     <head th:replace="_fragments :: head(~{::title})">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -381,7 +381,7 @@
                 position: 'left center'
             });
 
-            var serurl = "http://www.leecue.xyz";
+            var serurl = "http://leecue.xyz";
             var url = /*[[@{/blog/{id}(id=${blog.id})}]]*/"";
 
             var qrcode = new QRCode("qrcode", {
