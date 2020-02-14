@@ -30,16 +30,17 @@ public class TagShowController {
     @GetMapping("/tags/{id}")
     public String types(@PathVariable Long id, @RequestParam(defaultValue = "1", value = "pageNum") Integer pageNum,
                         Model model) {
-        List<Tag> allType = tagService.getAllTag();
-        if (id == -1) {
-            id = allType.get(0).getId();
+        List<Tag> allTag = tagService.getAllTag();
+        if (allTag.size() > 0) {
+            if (id == -1) {
+                id = allTag.get(0).getId();
+            }
         }
-
         PageHelper.startPage(pageNum, 6);
         Page<Blog> blogs = blogService.getBlogsByTagId(id);
         PageInfo<Blog> pageInfo = new PageInfo<>(blogs);
 
-        model.addAttribute("tags", allType);
+        model.addAttribute("tags", allTag);
         model.addAttribute("pageInfo", pageInfo);
         model.addAttribute("activeTagId", id);
         return "tags";

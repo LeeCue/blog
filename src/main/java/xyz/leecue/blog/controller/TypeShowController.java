@@ -32,8 +32,10 @@ public class TypeShowController {
     public String types(@PathVariable Long id, @RequestParam(defaultValue = "1", value = "pageNum") Integer pageNum,
                         Model model) {
         List<Type> allType = typeService.getAllType();
-        if (id == -1) {
-            id = allType.get(0).getId();
+        if (allType.size() > 0) {
+            if (id == -1) {
+                id = allType.get(0).getId();
+            }
         }
         BlogQuery blogQuery = new BlogQuery();
         blogQuery.setTypeId(id);
