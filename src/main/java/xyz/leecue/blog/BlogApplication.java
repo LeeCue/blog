@@ -5,6 +5,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ImportResource;
 
+import javax.annotation.Resource;
+
 @SpringBootApplication
 @MapperScan("xyz.leecue.blog.dao")
 public class BlogApplication {
