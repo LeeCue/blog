@@ -40,7 +40,7 @@ public class BlogController {
         Page<Blog> blogs = blogService.listBlog(blogQuery);
         PageInfo<Blog> finds = new PageInfo<>(blogs);
         model.addAttribute("pageInfo",finds);
-        return "/admin/blogs";
+        return "admin/blogs";
     }
 
     @PostMapping("/blogs/search")
@@ -51,14 +51,14 @@ public class BlogController {
         Page<Blog> blogs = blogService.listBlog(blogQuery);
         PageInfo<Blog> finds = new PageInfo<>(blogs);
         model.addAttribute("pageInfo",finds);
-        return "/admin/blogs";
+        return "admin/blogs";
     }
 
     @GetMapping("/blogs/input")
     public String input(Model model) {
         model.addAttribute("types", typeService.listType());
         model.addAttribute("tags",tagService.listTag());
-        return "/admin/blogs-input";
+        return "admin/blogs-input";
     }
 
     @PostMapping("/blogs/create")
@@ -82,7 +82,7 @@ public class BlogController {
         Blog blog = blogService.getBlog(blogId);
         //System.out.println(blog.getTagIds());
         model.addAttribute("blog", blog);
-        return "/admin/blogs-update";
+        return "admin/blogs-update";
     }
 
     @PostMapping("/blogs/updatePost")

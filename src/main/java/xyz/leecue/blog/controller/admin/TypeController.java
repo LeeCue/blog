@@ -31,12 +31,12 @@ public class TypeController {
         PageInfo<Type> pageInfo = new PageInfo<>(types);
         model.addAttribute("pageInfo", pageInfo);
         //System.out.println(pageInfo);
-        return "/admin/types";
+        return "admin/types";
     }
 
     @GetMapping("/types/input")
     public String Input() {
-        return "/admin/types-input";
+        return "admin/types-input";
     }
 
     @GetMapping("/types/{id}/inputType")
@@ -44,7 +44,7 @@ public class TypeController {
         if (id != null) {
             model.addAttribute("type",typeService.getType(id));
         }
-        return "/admin/types-input";
+        return "admin/types-input";
     }
 
     @PostMapping("/typesSave")
@@ -54,7 +54,7 @@ public class TypeController {
             saveType = typeService.saveType(type);
         } else {
             model.addAttribute("message", "该分类已经存在");
-            return "/admin/types-input";
+            return "admin/types-input";
         }
         if (saveType == null) {
             //没有保存成功
@@ -70,7 +70,7 @@ public class TypeController {
     public String editPost(Model model,@PathVariable Long id,Type type, RedirectAttributes attributes) {
         Type updateType = typeService.getType(id);
         model.addAttribute("type",type);
-        return "/admin/types-update";
+        return "admin/types-update";
     }
 
     @PostMapping("/types/update")
@@ -80,7 +80,7 @@ public class TypeController {
             updateType = typeService.updateType(id, type);
         } else {
             model.addAttribute("message", "该分类已经存在");
-            return "/admin/types-update";
+            return "admin/types-update";
         }
         if (updateType == null) {
             //没有修改成功

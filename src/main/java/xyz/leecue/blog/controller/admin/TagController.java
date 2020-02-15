@@ -32,12 +32,12 @@ public class TagController {
         PageInfo<Tag> pageInfo = new PageInfo<>(tags);
         model.addAttribute("pageInfo", pageInfo);
         //System.out.println(pageInfo);
-        return "/admin/tags";
+        return "admin/tags";
     }
 
     @GetMapping("/tags/input")
     public String input() {
-        return "/admin/tags-input";
+        return "admin/tags-input";
     }
 
     @GetMapping("/tags/{id}/inputTag")
@@ -45,7 +45,7 @@ public class TagController {
         if (id != null) {
             model.addAttribute("tag",tagService.getTag(id));
         }
-        return "/admin/tags-input";
+        return "admin/tags-input";
     }
 
     @PostMapping("/tagsSave")
@@ -55,7 +55,7 @@ public class TagController {
             saveTag = tagService.saveTag(tag);
         } else {
             model.addAttribute("message", "该标签已经存在");
-            return "/admin/tags-input";
+            return "admin/tags-input";
         }
         if (saveTag == null) {
             //没有保存成功
@@ -71,7 +71,7 @@ public class TagController {
     public String editPost(Model model,@PathVariable Long id,Tag tag) {
         Tag updateTag = tagService.getTag(id);
         model.addAttribute("tag",tag);
-        return "/admin/tags-update";
+        return "admin/tags-update";
     }
 
     @PostMapping("/tags/update")
@@ -81,7 +81,7 @@ public class TagController {
             updateTag = tagService.updateTag(id, tag);
         } else {
             model.addAttribute("message", "该标签已经存在");
-            return "/admin/tags-update";
+            return "admin/tags-update";
         }
         if (updateTag == null) {
             //没有修改成功
