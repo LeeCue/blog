@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-    <head th:fragment="head(title)">
+    <head th:replace="admin/_fragments :: head(~{::title})">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title th:replace="${title}">博客修改</title>
+        <title>博客修改</title>
         <link rel="shortcut icon" th:href="@{/favicon.ico}">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
         <link rel="stylesheet" href="../../static/css/index.css" th:href="@{/css/index.css}">
