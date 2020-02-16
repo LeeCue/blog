@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
         <title>博客发布</title>
-        <link rel="stylesheet" href="../../static/css/index.css" th:href="@{/css/index.css}">
+        <link rel="stylesheet" href="../static/css/index.css" th:href="@{/css/index.css}">
         <link rel="stylesheet" href="../../static/lib/editormd/css/editormd.min.css" th:href="@{/lib/editormd/css/editormd.min.css}">
     </head>
     <body>
@@ -198,11 +198,12 @@
             </div>
         </footer>
 
-        <!--/*/<th:block th:replace="admin/_fragments :: script">/*/-->
         <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.2.4/dist/semantic.min.js"></script>
-        <script src="../../static/lib/editormd/editormd.min.js" th:href="@{/lib/editormd/editormd.min.js}"></script>
-        <!--/*/</th:block>/*/-->
+        <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+        <script src="../../static/lib/editormd/editormd.js" th:src="@{/lib/editormd/editormd.js}"></script>
+        <script>
+            $('#newBlog-container').load(/*[[@{/footer/newBlog}]]*/"/footer/newBlog");
+        </script>
 
         <script>
             $('.menu.toggle').click(function () {
@@ -268,7 +269,7 @@
                     width   : "90%",
                     height  : 640,
                     syncScrolling : "single",
-                    path    : "../../static/lib/editormd/lib/"
+                    path    : "/lib/editormd/lib/"
                 });
             });
         </script>
